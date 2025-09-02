@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Recursos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        // Reemplazar los siguientes datos con los del proyecto de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="titulo-principal">Gestor de Recursos</h1>
+    </header>
+
+    <nav>
+        <button id="btnTools" class="active"><i class="fa-solid fa-screwdriver-wrench"></i> Herramientas</button>
+        <button id="btnVehicles"><i class="fa-solid fa-car"></i> Vehículos</button>
+        <button id="btnApparel"><i class="fa-solid fa-tshirt"></i> Indumentaria</button>
+        <button id="btnNotifications"><i class="fa-solid fa-bell"></i> Notificaciones</button>
+    </nav>
+
+    <main>
+        <section id="tools" class="content-section active">
+            <h2>Gestión de Herramientas</h2>
+            <div class="content-container">
+                <div class="table-container">
+                    <h3>Inventario de Herramientas</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Stock Total</th>
+                                <th>Stock Disponible</th>
+                                <th>Asignado a</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="toolsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-container">
+                    <h3>Asignar Herramienta</h3>
+                    <form id="assignToolForm">
+                        <label for="toolSelect">Herramienta:</label>
+                        <select id="toolSelect" required></select>
+                        <label for="toolTechnicianSelect">Técnico:</label>
+                        <select id="toolTechnicianSelect" required></select>
+                        <label for="toolQuantity">Cantidad:</label>
+                        <input type="number" id="toolQuantity" value="1" min="1" required>
+                        <button type="submit" class="primary-btn">Asignar</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="vehicles" class="content-section">
+            <h2>Gestión de Vehículos</h2>
+            
+            <div class="form-container">
+                <h3>Agregar Nuevo Vehículo</h3>
+                <form id="addVehicleForm">
+                    <label for="vehicleName">Nombre del Vehículo (Modelo/Patente):</label>
+                    <input type="text" id="vehicleName" placeholder="Ej: Ford Ranger (AA123BC)" required>
+                    <button type="submit" class="primary-btn">Agregar Vehículo</button>
+                </form>
+            </div>
+            
+            <div id="vehicleList" class="vehicle-grid">
+            </div>
+
+            <div class="checklist-section">
+                <h3 class="checklist-title">Checklist de Mantenimiento y Seguridad</h3>
+                <div class="fila">
+                    <div class="columna">
+                        <div class="tarjeta">
+                            <h5 class="titulo-tarjeta seguridad">✅ Seguridad y Documentación</h5>
+                            <ul class="lista-checklist">
+                                <li class="checklist-item">
+                                    <span class="item-nombre">Extintor de incendios</span>
+                                    <div class="item-detalles">
+                                        <label>Vencimiento:</label>
+                                        <input type="date" class="item-fecha">
+                                        <label>Hora:</label>
+                                        <input type="time" class="item-hora">
+                                    </div>
+                                    <div class="item-acciones">
+                                        <button class="btn-editar">Editar</button>
+                                        <button class="btn-eliminar">Eliminar</button>
+                                        <button class="btn-aplicar">Aplicar</button>
+                                    </div>
+                                </li>
+                                <li class="checklist-item">
+                                    <span class="item-nombre">Neumáticos</span>
+                                    <div class="item-detalles">
+                                        <label>Próx. Cambio:</label>
+                                        <input type="date" class="item-fecha">
+                                        <label>Hora:</label>
+                                        <input type="time" class="item-hora">
+                                    </div>
+                                    <div class="item-acciones">
+                                        <button class="btn-editar">Editar</button>
+                                        <button class="btn-eliminar">Eliminar</button>
+                                        <button class="btn-aplicar">Aplicar</button>
+                                    </div>
+                                </li>
+                                <li class="checklist-item">
+                                    <span class="item-nombre">Líquido de frenos</span>
+                                    <div class="item-detalles">
+                                        <label>Próx. Cambio:</label>
+                                        <input type="date" class="item-fecha">
+                                        <label>Hora:</label>
+                                        <input type="time" class="item-hora">
+                                    </div>
+                                    <div class="item-acciones">
+                                        <button class="btn-editar">Editar</button>
+                                        <button class="btn-eliminar">Eliminar</button>
+                                        <button class="btn-aplicar">Aplicar</button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="columna">
+                        <div class="tarjeta">
+                            <h5 class="titulo-tarjeta mantenimiento">🔧 Mantenimiento Preventivo</h5>
+                            <ul class="lista-checklist">
+                                <li class="checklist-item">
+                                    <span class="item-nombre">Cambio de Aceite</span>
+                                    <div class="item-detalles">
+                                        <label>Próx. Cambio:</label>
+                                        <input type="date" class="item-fecha">
+                                        <label>Hora:</label>
+                                        <input type="time" class="item-hora">
+                                    </div>
+                                    <div class="item-acciones">
+                                        <button class="btn-editar">Editar</button>
+                                        <button class="btn-eliminar">Eliminar</button>
+                                        <button class="btn-aplicar">Aplicar</button>
+                                    </div>
+                                </li>
+                                <li class="checklist-item">
+                                    <span class="item-nombre">Filtro de aire</span>
+                                    <div class="item-detalles">
+                                        <label>Próx. Cambio:</label>
+                                        <input type="date" class="item-fecha">
+                                        <label>Hora:</label>
+                                        <input type="time" class="item-hora">
+                                    </div>
+                                    <div class="item-acciones">
+                                        <button class="btn-editar">Editar</button>
+                                        <button class="btn-eliminar">Eliminar</button>
+                                        <button class="btn-aplicar">Aplicar</button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-section">
+                <h3 class="checklist-title">Historial de Mantenimiento Aplicado</h3>
+                <div id="checklist-history-container" class="history-grid">
+                </div>
+            </div>
+        </section>
+
+        <section id="apparel" class="content-section">
+            <h2>Gestión de Indumentaria</h2>
+            <div class="content-container">
+                <div class="table-container">
+                    <h3>Inventario de Indumentaria</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Stock Disponible</th>
+                                <th>Asignado a</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apparelTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-container">
+                    <h3>Asignar Indumentaria</h3>
+                    <form id="assignApparelForm">
+                        <label for="apparelSelect">Indumentaria:</label>
+                        <select id="apparelSelect" required></select>
+                        <label for="apparelTechnicianSelect">Técnico:</label>
+                        <select id="apparelTechnicianSelect" required></select>
+                        <button type="submit" class="primary-btn">Asignar</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="notifications" class="content-section">
+            <h2>Notificaciones del Sistema</h2>
+            <div class="form-container">
+                <h3>Enviar Notificación</h3>
+                <form id="notificationForm">
+                    <label for="notificationMessage">Mensaje:</label>
+                    <textarea id="notificationMessage" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                    <button type="submit" class="primary-btn">Enviar Notificación</button>
+                </form>
+            </div>
+            <div id="notificationList" class="notification-list">
+            </div>
+        </section>
+    </main>
+</body>
+</html>
